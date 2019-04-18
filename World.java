@@ -49,9 +49,8 @@ public class World {
         }
 	}
 	
-	public void render(Graphics g) {
+    public void render(Graphics g) {
         map.render(camera);
         camera.drawPlayer();
-        g.drawString(String.valueOf(map.isSolidTile(player.getX(), player.getY())),20.0f,20.0f);
-	}
+    }
 }
