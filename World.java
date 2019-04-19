@@ -15,8 +15,8 @@ public class World {
     private static final double speed = 0.25;
 
     // Variables used to keep track of player destination
-    private float playerDestinationX;
-    private float playerDestinationY;
+    private float targetX;
+    private float targetY;
 
     public World() throws SlickException {
         // Initialize map
@@ -26,28 +26,42 @@ public class World {
         float initialPositionY = map.getHeight() / 2;
         float initialPositionX = map.getWidth() / 2;
 
-        // Initialize player and player position
         player = new Player(initialPositionX, initialPositionY);
-        playerDestinationX = initialPositionX;
-        playerDestinationY = initialPositionY;
+        targetX = initialPositionX;
+        targetY = initialPositionY;
 
         // Initialize player camera
         camera = new Camera(map,player);
     }
 
     public void update(Input input, int delta) {
-        if (input.isMousePressed(0)) {
-            playerDestinationX = input.getMouseX()+camera.getLeft();
-            playerDestinationY = input.getMouseY()+camera.getTop();
+        // Get target
+        if (input.isMousePressed(1)) {
+            targetX = input.getMouseX()+camera.getLeft();
+            targetY = input.getMouseY()+camera.getTop();
         }
-        if (map.isSolidTile(player.getX(), player.getY())) {
-            playerDestinationX = player.getX();
-            playerDestinationY = player.getY();
+        // If player has not reached the target ...
+        if (!player.atPosition(targetX,targetY)) {
+            // Calculate speed to approach target
+            double angle = Math.atan2(targetY-player.getY(),targetX-player.getX());
+            double xSpeed = Math.cos(angle)*speed;
+            double ySpeed = Math.sin(angle)*speed;
+
+            // Check if the next coordinates will be within a solid tile
+            float nextX = (float)(player.getX()+delta*xSpeed);
+            float nextY = (float)(player.getY()+delta*ySpeed);
+            // If solid, stop moving
+            if (map.isSolidTile(nextX,nextY)) {
+                targetX = player.getX();
+                targetY = player.getY();
+            }
+            // Or else move into next coordinate
+            else {
+                player.setX(nextX);
+                player.setY(nextY);
+            }
         }
-        if (!player.atPosition(playerDestinationX,playerDestinationY)) {
-            player.moveTo(playerDestinationX,playerDestinationY,delta,World.speed);
-        }
-	}
+    }
 	
     public void render(Graphics g) {
         map.render(camera);
