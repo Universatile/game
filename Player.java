@@ -28,20 +28,22 @@ public class Player {
         return y;
     }
 
+    // Set x-position of player
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    // Set y-position of player
+    public void setY(float y) {
+        this.y = y;
+    }
+
     // Draw the player to the screen using current player coordinates
     public void render(float x, float y) {
         sprite.draw(x,y);
     }
 
-    public void moveTo(float x, float y, int delta, double speed) {
-        double angle = Math.atan2(y-this.y,x-this.x);
-        double xSpeed = Math.cos(angle)*speed;
-        double ySpeed = Math.sin(angle)*speed;
-
-        this.x += delta*xSpeed;
-        this.y += delta*ySpeed;
-    }
-
+    // Return true when the player is within 0.25 pixels of the given coordinates
     public boolean atPosition(float x, float y) {
         return (Math.abs(y-this.y) <= 0.25 || Math.abs(x-this.x) <= 0.25);
     }
